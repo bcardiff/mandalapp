@@ -38,29 +38,86 @@
     var draw = new Layer();
     var preview = new Layer();
 
+    var drawingPath;
+    var singleDrawer = {
+      preview: function(event) {
+        new Path.Circle({
+          center: [event.point.x, event.point.y],
+          radius: 1,
+          fillColor: 'black',
+        });
+      },
+      onMouseDown: function(event) {
+        drawingPath = new Path();
+        drawingPath.strokeColor = 'black';
+        drawingPath.add(event.point);
+      },
+      onMouseDrag: function(event) {
+        drawingPath.add(event.point);
+      }
+    };
+
+    var drawingPaths;
+    var getClonedPoints = function(point) {
+      var copy = new Matrix(1,0,0,1,0,0);
+      var res = [];
+      for(var i = 0; i < n_lines; i++) {
+        res.push(copy.transform(point));
+        copy.rotate(360.0 / n_lines, center);
+      }
+      return res;
+    }
+
+    var cloneDrawer = {
+      preview: function(event) {
+        var points = getClonedPoints(event.point);
+        var copy = new Matrix(1,0,0,1,0,0);
+        for(var i = 0; i < n_lines; i++) {
+          new Path.Circle({
+            center: points[i],
+            radius: 1,
+            fillColor: (i == 0 ? 'black' : '#999'),
+          });
+        }
+      },
+      onMouseDown: function(event) {
+        var points = getClonedPoints(event.point);
+        drawingPaths = [];
+        for(var i = 0; i < n_lines; i++) {
+          var drawingPath = new Path();
+          drawingPath.strokeColor = 'black';
+          drawingPath.add(points[i]);
+          drawingPaths.push(drawingPath);
+        }
+      },
+      onMouseDrag: function(event) {
+        var points = getClonedPoints(event.point);
+        for(var i = 0; i < n_lines; i++) {
+          drawingPaths[i].add(points[i]);
+        }
+      }
+    };
+
+    // var drawer = singleDrawer;
+    var drawer = cloneDrawer;
+
     var pencil = new Tool();
     pencil.onMouseMove = function(event) {
       preview.removeChildren();
       if(circle.contains(event.point)) {
         canvas.classList.add('nocursor');
         preview.activate();
-        new Path.Circle({
-          center: [event.point.x, event.point.y],
-          radius: 1,
-          fillColor: 'black',
-        });
+        drawer.preview(event);
       } else {
         canvas.classList.remove('nocursor');
       }
     };
     pencil.onMouseDown = function(event) {
       draw.activate();
-      path = new Path();
-      path.strokeColor = 'black';
-      path.add(event.point);
+      drawer.onMouseDown(event);
     };
     pencil.onMouseDrag = function(event) {
-      path.add(event.point);
+      drawer.onMouseDrag(event);
     };
 
     var nop = new Tool();
