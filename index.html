@@ -36,8 +36,23 @@
     }
 
     var draw = new Layer();
+    var preview = new Layer();
 
     var pencil = new Tool();
+    pencil.onMouseMove = function(event) {
+      preview.removeChildren();
+      if(circle.contains(event.point)) {
+        canvas.classList.add('nocursor');
+        preview.activate();
+        new Path.Circle({
+          center: [event.point.x, event.point.y],
+          radius: 1,
+          fillColor: 'black',
+        });
+      } else {
+        canvas.classList.remove('nocursor');
+      }
+    };
     pencil.onMouseDown = function(event) {
       draw.activate();
       path = new Path();
