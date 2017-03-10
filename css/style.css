@@ -1,7 +1,31 @@
-html, body {
+html, body, .fullheight {
   margin: 0;
-  overflow: hidden;
   height: 100%;
+  width: 100%;
+}
+
+.hbox {
+  display: flex;
+  flex-direction: row;
+}
+
+#toolbar {
+  flex: 0 0 240px;
+  border-right: 1px solid #ccc;
+}
+
+#editor {
+  flex: 1 1;
+}
+
+
+#toolbar h1 {
+  text-align: center;
+  width: 100%;
+}
+
+#toolbar button {
+  width: 100%;
 }
 
 canvas[resize] {
