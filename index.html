@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Almandala</title>
+  <title>almixcomi</title>
   <link rel="stylesheet" type="text/css" href="./css/style.css" />
   <script type="text/javascript" src="./js/paper-core.min.js"></script>
   <script type="text/javascript">
@@ -60,10 +60,18 @@
     var drawingPaths;
     var getClonedPoints = function(point) {
       var copy = new Matrix(1,0,0,1,0,0);
+      var symm = copy.clone().scale(1,-1);
+      symm.rotate(360.0 / n_lines, center);
+
       var res = [];
       for(var i = 0; i < n_lines; i++) {
-        res.push(copy.transform(point));
+        if (true || i % 2 == 0) {
+          res.push(copy.transform(point));
+        } else {
+          res.push(symm.transform(point));
+        }
         copy.rotate(360.0 / n_lines, center);
+        symm.rotate(360.0 / n_lines, center);
       }
       return res;
     }
@@ -98,7 +106,7 @@
       }
     };
 
-    // var drawer = singleDrawer;
+    var drawer = singleDrawer;
     var drawer = cloneDrawer;
 
     var pencil = new Tool();
@@ -128,7 +136,7 @@
     };
 
     pencil.activate();
-    // window.setInterval(function(){ guides.rotate(1, center); draw.rotate(1, center); }, 300);
+    // window.setInterval(function(){ guides.rotate(1, center); draw.rotate(1, center); }, 30);
 
     window.onresize = function() {
       view.matrix = originViewport.clone().scale(calcRadius() / radius);
@@ -137,6 +145,7 @@
   </script>
 </head>
 <body>
+  <h1>almixcomi</h1>
   <button id="pencil">draw</button>
   <canvas id="main" resize>
   </canvas>
