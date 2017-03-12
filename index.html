@@ -7,12 +7,13 @@
   <script type="text/javascript" src="./js/paper-core.min.js"></script>
   <script type="text/javascript">
   window.onload = function() {
+    var editor = document.getElementById('editor');
     var center = [0, 0];
     var calcRadius = function() {
-      return Math.min(window.innerWidth / 2, window.innerHeight / 2) * 0.85;
+      return Math.min(editor.clientWidth / 2, editor.clientHeight / 2) * 0.85;
     }
     var radius = calcRadius();
-    var initialSize = { width: window.innerWidth, height: window.innerHeight };
+    var initialSize = { width: editor.clientWidth, height: editor.clientHeight };
     paper.install(window);
 
     var canvas = document.getElementById('main');
@@ -178,8 +179,8 @@
       var factor = calcRadius() / radius;
 
       view.matrix = originViewport.clone()
-        .translate((1.0 - factor) * (initialSize.width - window.innerWidth),
-          (1.0 - factor) * (initialSize.height - window.innerHeight)
+        .translate((1.0 - factor) * (initialSize.width - editor.clientWidth),
+          (1.0 - factor) * (initialSize.height - editor.clientHeight)
           )
         .scale(factor);
     };
