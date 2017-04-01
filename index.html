@@ -4,21 +4,23 @@
   <title>almixcomi</title>
 <link href="styles.css" rel="stylesheet"></head>
 <body>
+  <script type="text/x-template" id="pencil-button-template">
+    <div class="row">
+      <button v-bind:style="kind == $root.pencil ? { color: 'white', backgroundColor: $root.color.hex } : { }" v-on:click="activate"><slot></slot></button>
+    </div>
+  </script>
   <div class="fullheight hbox">
     <div id="toolbar">
       <div class="container">
         <div class="row">
           <h1>almixcomi</h1>
         </div>
-
+        <pencil-button kind="single">.</pencil-button>
+        <pencil-button kind="duplicate">/ /</pencil-button>
+        <pencil-button kind="symmetry">/ \</pencil-button>
         <div class="row">
-          <button id="single">.</button>
-        </div>
-        <div class="row">
-          <button id="duplicate">/ /</button>
-        </div>
-        <div class="row">
-          <button id="symmetry">/ \</button>
+          <swatches-picker v-model="color" v-on:change-color="onColorChange">
+          </swatches-picker>
         </div>
       </div>
     </div>
@@ -27,5 +29,5 @@
       </canvas>
     </div>
   </div>
-<script type="text/javascript" src="./canvas.js"></script></body>
+<script type="text/javascript" src="./app.js"></script></body>
 </html>
