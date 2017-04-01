@@ -47,3 +47,8 @@ canvas[resize] {
 .nocursor {
   cursor: none;
 }
+
+.vue-color__swatches {
+  width: 100% !important;
+  height: 360px;
+}

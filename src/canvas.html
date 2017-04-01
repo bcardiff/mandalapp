@@ -18,6 +18,10 @@
         <pencil-button kind="single">.</pencil-button>
         <pencil-button kind="duplicate">/ /</pencil-button>
         <pencil-button kind="symmetry">/ \</pencil-button>
+        <div class="row">
+          <swatches-picker v-model="color" v-on:change-color="onColorChange">
+          </swatches-picker>
+        </div>
       </div>
     </div>
     <div id="editor">

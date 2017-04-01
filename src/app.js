@@ -1,5 +1,6 @@
 import './canvas.css';
 import Vue from 'vue';
+import { Swatches } from 'vue-color';
 import paper from 'paper';
 
 window.onload = function() {
@@ -37,6 +38,7 @@ window.onload = function() {
 
   var draw = new Layer();
   var preview = new Layer();
+  var selectedColor = '#B71C1C';
 
   var drawingPath;
   var singleDrawer = {
@@ -49,7 +51,7 @@ window.onload = function() {
     },
     onMouseDown: function(event) {
       drawingPath = new Path();
-      drawingPath.strokeColor = 'black';
+      drawingPath.strokeColor = selectedColor;
       drawingPath.add(event.point);
     },
     onMouseDrag: function(event) {
@@ -94,7 +96,7 @@ window.onload = function() {
       drawingPaths = [];
       for(var i = 0; i < n_lines; i++) {
         var drawingPath = new Path();
-        drawingPath.strokeColor = 'black';
+        drawingPath.strokeColor = selectedColor;
         drawingPath.add(points[i]);
         drawingPaths.push(drawingPath);
       }
@@ -149,6 +151,10 @@ window.onload = function() {
     }
   }
 
+  function activateColor(hexColor) {
+    selectedColor = hexColor;
+  }
+
   // window.setInterval(function(){ guides.rotate(1, center); draw.rotate(1, center); }, 30);
 
   window.onresize = function() {
@@ -171,19 +177,26 @@ window.onload = function() {
         bus.$emit('activate-pencil', this.kind);
       },
     }
-  })
+  });
+
+  Vue.component('swatches-picker', Swatches);
 
   var app = new Vue({
     el: '#toolbar',
     data: {
+      color: { hex: selectedColor },
       pencil: ''
     },
     methods: {
       activatePencil: function(kind) {
         this.pencil = kind;
         activatePencil(kind);
+      },
+      onColorChange: function(val) {
+        this.color = val;
+        activateColor(val.hex);
       }
-    }
+    },
   });
 
   bus.$on('activate-pencil', app.activatePencil);
