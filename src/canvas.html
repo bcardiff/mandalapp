@@ -4,22 +4,20 @@
   <title>almixcomi</title>
 </head>
 <body>
+  <script type="text/x-template" id="pencil-button-template">
+    <div class="row">
+      <button v-bind:class="{ active: kind == $root.pencil }" v-on:click="activate"><slot></slot></button>
+    </div>
+  </script>
   <div class="fullheight hbox">
     <div id="toolbar">
       <div class="container">
         <div class="row">
           <h1>almixcomi</h1>
         </div>
-
-        <div class="row">
-          <button id="single">.</button>
-        </div>
-        <div class="row">
-          <button id="duplicate">/ /</button>
-        </div>
-        <div class="row">
-          <button id="symmetry">/ \</button>
-        </div>
+        <pencil-button kind="single">.</pencil-button>
+        <pencil-button kind="duplicate">/ /</pencil-button>
+        <pencil-button kind="symmetry">/ \</pencil-button>
       </div>
     </div>
     <div id="editor">

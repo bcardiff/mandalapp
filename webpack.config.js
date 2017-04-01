@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   context: path.resolve(__dirname, './src'),
   entry: {
-    canvas: './canvas.js',
+    app: './app.js',
   },
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -21,6 +21,11 @@ module.exports = {
         })
       }
     ],
+  },
+  resolve: {
+    alias: {
+      vue: 'vue/dist/vue.js'
+    }
   },
   plugins: [
     new ExtractTextPlugin('styles.css'),

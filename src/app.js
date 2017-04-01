@@ -1,7 +1,8 @@
 import './canvas.css';
+import Vue from 'vue';
+import paper from 'paper';
 
 window.onload = function() {
-  var paper = require('paper');
 
   var editor = document.getElementById('editor');
   var center = [0, 0];
@@ -132,43 +133,22 @@ window.onload = function() {
   nop.activate();
 
   function activatePencil(kind) {
-    var buttons = document.getElementsByTagName("button");
-    for(var i = 0; i < buttons.length; i++) {
-      buttons[i].classList.remove('active');
-    }
     if (kind == 'single') {
       drawer = singleDrawer;
       pencil.activate();
-      document.getElementById("single").classList.add('active');
     } else if (kind == 'duplicate') {
       drawer = cloneDrawer;
       useDuplicate = true;
       pencil.activate();
-      document.getElementById("duplicate").classList.add('active');
     } else if (kind == 'symmetry') {
       drawer = cloneDrawer;
       useDuplicate = false;
       pencil.activate();
-      document.getElementById("symmetry").classList.add('active');
     } else if (kind == 'none') {
       nop.activate();
     }
   }
 
-  var buttonIds = ['single', 'duplicate', 'symmetry'];
-  for (var i = 0; i < buttonIds.length; i++) {
-    (function(buttonId){
-      document.getElementById(buttonId).onclick = function() {
-        if (this.classList.contains("active")) {
-          activatePencil('none');
-        } else {
-          activatePencil(buttonId);
-        }
-      };
-    })(buttonIds[i]);
-  }
-
-  activatePencil('duplicate');
   // window.setInterval(function(){ guides.rotate(1, center); draw.rotate(1, center); }, 30);
 
   window.onresize = function() {
@@ -180,4 +160,32 @@ window.onload = function() {
         )
       .scale(factor);
   };
+
+  var bus = new Vue();
+
+  Vue.component('pencil-button', {
+    props: ['kind', 'active'],
+    template: '#pencil-button-template',
+    methods: {
+      activate: function() {
+        bus.$emit('activate-pencil', this.kind);
+      },
+    }
+  })
+
+  var app = new Vue({
+    el: '#toolbar',
+    data: {
+      pencil: ''
+    },
+    methods: {
+      activatePencil: function(kind) {
+        this.pencil = kind;
+        activatePencil(kind);
+      }
+    }
+  });
+
+  bus.$on('activate-pencil', app.activatePencil);
+  bus.$emit('activate-pencil', 'duplicate');
 }

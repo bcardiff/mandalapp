@@ -17,7 +17,8 @@
   "dependencies": {
     "gh-pages": "^0.12.0",
     "milligram": "^1.3.0",
-    "paper": "^0.10.3"
+    "paper": "^0.10.3",
+    "vue": "^2.2.4"
   },
   "scripts": {
     "deps": "yarn install",
