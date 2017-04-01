@@ -6,7 +6,7 @@
 <body>
   <script type="text/x-template" id="pencil-button-template">
     <div class="row">
-      <button v-bind:class="{ active: kind == $root.pencil }" v-on:click="activate"><slot></slot></button>
+      <button v-bind:style="kind == $root.pencil ? { color: 'white', backgroundColor: $root.color.hex } : { }" v-on:click="activate"><slot></slot></button>
     </div>
   </script>
   <div class="fullheight hbox">

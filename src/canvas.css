@@ -28,15 +28,15 @@ html, body, .fullheight {
 
 #toolbar button {
   width: 100%;
-  background-color: #9b4dca;
+  background: white;
+  color: #9b4dca;
 }
 
 #toolbar button:hover {
-  background-color: #7F007F;
+  background-color: #f0f0f0;
 }
 
 #toolbar button.active {
-  background-color: #606c76;
 }
 
 canvas[resize] {
