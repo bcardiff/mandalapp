@@ -1,6 +1,7 @@
 import './canvas.css';
 import Vue from 'vue';
 import { Swatches } from 'vue-color';
+import vueSlider from 'vue-slider-component'
 import paper from 'paper';
 
 window.onload = function() {
@@ -39,19 +40,22 @@ window.onload = function() {
   var draw = new Layer();
   var preview = new Layer();
   var selectedColor = '#B71C1C';
+  var strokeWidth = 1;
+  var pencilKind;
 
   var drawingPath;
   var singleDrawer = {
     preview: function(event) {
       new Path.Circle({
         center: [event.point.x, event.point.y],
-        radius: 1,
+        radius: strokeWidth,
         fillColor: 'black',
       });
     },
     onMouseDown: function(event) {
       drawingPath = new Path();
       drawingPath.strokeColor = selectedColor;
+      drawingPath.strokeWidth = strokeWidth;
       drawingPath.add(event.point);
     },
     onMouseDrag: function(event) {
@@ -86,7 +90,7 @@ window.onload = function() {
       for(var i = 0; i < n_lines; i++) {
         new Path.Circle({
           center: points[i],
-          radius: 1,
+          radius: strokeWidth,
           fillColor: (i == 0 ? 'black' : '#999'),
         });
       }
@@ -97,6 +101,7 @@ window.onload = function() {
       for(var i = 0; i < n_lines; i++) {
         var drawingPath = new Path();
         drawingPath.strokeColor = selectedColor;
+        drawingPath.strokeWidth = strokeWidth;
         drawingPath.add(points[i]);
         drawingPaths.push(drawingPath);
       }
@@ -135,6 +140,7 @@ window.onload = function() {
   nop.activate();
 
   function activatePencil(kind) {
+    pencilKind = kind;
     if (kind == 'single') {
       drawer = singleDrawer;
       pencil.activate();
@@ -153,6 +159,11 @@ window.onload = function() {
 
   function activateColor(hexColor) {
     selectedColor = hexColor;
+  }
+
+  function changeStrokeWith(value) {
+    strokeWidth = value;
+    activatePencil(pencilKind);
   }
 
   // window.setInterval(function(){ guides.rotate(1, center); draw.rotate(1, center); }, 30);
@@ -180,12 +191,14 @@ window.onload = function() {
   });
 
   Vue.component('swatches-picker', Swatches);
+  Vue.component('vue-slider', vueSlider);
 
   var app = new Vue({
     el: '#toolbar',
     data: {
       color: { hex: selectedColor },
-      pencil: ''
+      pencil: '',
+      strokeWidth: 1,
     },
     methods: {
       activatePencil: function(kind) {
@@ -195,10 +208,11 @@ window.onload = function() {
       onColorChange: function(val) {
         this.color = val;
         activateColor(val.hex);
-      }
+      },
     },
   });
 
   bus.$on('activate-pencil', app.activatePencil);
   bus.$emit('activate-pencil', 'duplicate');
+  app.$watch('strokeWidth', changeStrokeWith);
 }

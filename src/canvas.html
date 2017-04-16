@@ -22,6 +22,11 @@
           <swatches-picker v-model="color" v-on:change-color="onColorChange">
           </swatches-picker>
         </div>
+        <br/>
+        <br/>
+        <div class="row">
+          <vue-slider ref="strokeSlider" v-model="strokeWidth" v-bind:min="1" v-bind:max="15" width="100%" height="2"></vue-slider>
+        </div>
       </div>
     </div>
     <div id="editor">

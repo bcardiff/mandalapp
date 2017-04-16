@@ -3307,6 +3307,10 @@ vue-color@^2.0.7:
     material-colors "^1.0.0"
     tinycolor2 "^1.1.2"
 
+vue-slider-component@^2.2.6:
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/vue-slider-component/-/vue-slider-component-2.2.6.tgz#209042e91d5bf62b97850f26272d44a94b61ae1e"
+
 vue@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.2.4.tgz#d0a3a050a80a12356d7950ae5a7b3131048209cc"
