@@ -1,37 +1,53 @@
 const path = require('path');
-const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   context: path.resolve(__dirname, './src'),
   entry: {
-    app: './app.js',
+    index: './index.js'
   },
   output: {
-    path: path.resolve(__dirname, './dist'),
-    filename: './[name].js',
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'dist')
   },
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          use: 'css-loader'
-        })
-      }
-    ],
-  },
-  resolve: {
-    alias: {
-      vue: 'vue/dist/vue.js'
-    }
+  devtool: 'eval-source-map',
+  devServer: {
+    contentBase: path.resolve(__dirname, 'dist')
   },
   plugins: [
-    new ExtractTextPlugin('styles.css'),
+    new CleanWebpackPlugin(['dist']),
+    new ExtractTextPlugin("styles.css"),
     new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'canvas.html',
-    })
+      title: 'Almandala'
+    }),
   ],
+  module: {
+    rules: [{
+      test: /\.js$/,
+      exclude: /node_modules/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ["es2015", "react"]
+        }
+      }
+    },
+    {
+      test: /\.scss$/,
+      use: ExtractTextPlugin.extract({
+        fallback: 'style-loader',
+        use: [{
+          loader: "css-loader", options: {
+            sourceMap: true
+          }
+        }, {
+          loader: "sass-loader", options: {
+            sourceMap: true
+          }
+        }]
+      })
+    }]
+  }
 };

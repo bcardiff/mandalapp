@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+}
+
+$toolbal-height: 4em;
+
+.canvas-container {
+  position: absolute;
+  top: 0;
+  bottom: $toolbal-height;
+  left: 0;
+  right: 0;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  height: $toolbal-height;
+  left: 0;
+  right: 0;
+  background-color: #d0aeff;
+}
+
+#canvas {
+  background-color: #f0f0f0;
+  width: 100%;
+  height: 100%;
+}
+
+.cursor--grab {
+  cursor: grab;
+}
+
+.cursor--grabbing {
+  cursor: grabbing;
+}
+
+h1 {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}

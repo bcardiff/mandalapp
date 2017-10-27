@@ -4,7 +4,7 @@
 
 ```
 $ yarn deps
-$ yarn server
+$ yarn start
 ```
 
 ## Deployment
