@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import paper from 'paper'
 import {Handle} from './handle'
 import {HandlesManager} from './handlesManager'
+import {ReplicatorTool} from './replicatorTool'
 
 class SnapHandle extends Handle {
   coerceCoordinate(point) {
@@ -19,6 +20,9 @@ class CanvasApp {
     this.handleManager.register(new SnapHandle(new Point(15,15)))
     // this.point = new Shape.Circle(new Point(0,0), 3)
     // this.point.strokeColor = 'black';
+
+    new ReplicatorTool(this, {center: {x: 30, y: 30}, radius: 80, slices: 8})
+    new ReplicatorTool(this, {center: {x: -130, y: -50}, radius: 90, slices: 8})
   }
 
   onMouseCursorChange(callback) { this._onMouseCursorChange = callback }

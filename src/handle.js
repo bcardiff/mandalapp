@@ -3,10 +3,11 @@ import paper from 'paper'
 const HANDLE_DEFAULT = '#ccc'
 const HANDLE_HOVER = '#aaa'
 const HANDLE_ACTIVE = '#666'
+const HANDLE_SIZE = 12
 
 export class Handle {
   constructor(point) {
-    this.shape = new Shape.Circle(point, 4)
+    this.shape = new Shape.Circle(point, HANDLE_SIZE / 2)
     this.setColor(HANDLE_DEFAULT)
   }
 
@@ -33,9 +34,14 @@ export class Handle {
 
   userMovedTo(point) {
     this.shape.position = this.coerceCoordinate(this.userInteractionDelta.transform(point))
+    this._onMoved(this.shape.position)
   }
 
   coerceCoordinate(point) {
     return point;
+  }
+
+  onMoved(callback) {
+    this._onMoved = callback
   }
 }
