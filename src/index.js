@@ -26,7 +26,11 @@ class CanvasApp {
   }
 
   onMouseCursorChange(callback) { this._onMouseCursorChange = callback }
-  setCursor(cursor) { this._onMouseCursorChange(cursor) }
+  setCursor(cursor) {
+    if (this._onMouseCursorChange) {
+      this._onMouseCursorChange(cursor)
+    }
+  }
 }
 
 class Root extends React.Component {

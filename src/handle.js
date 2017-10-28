@@ -11,6 +11,10 @@ export class Handle {
     this.setColor(HANDLE_DEFAULT)
   }
 
+  getShape() {
+    return this.shape
+  }
+
   setColor(color) {
     this.shape.strokeColor = color
   }
@@ -34,7 +38,13 @@ export class Handle {
 
   userMovedTo(point) {
     this.shape.position = this.coerceCoordinate(this.userInteractionDelta.transform(point))
-    this._onMoved(this.shape.position)
+    if (this._onMoved) {
+      this._onMoved(this.shape.position)
+    }
+  }
+
+  updatePosition(point) {
+    this.shape.position = point
   }
 
   coerceCoordinate(point) {
