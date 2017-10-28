@@ -45,7 +45,8 @@ class SnapHandle extends Handle {
 }
 
 class HandlesManager {
-  constructor() {
+  constructor(app) {
+    this.app = app
     this.handles = new Set()
     this.movePointsTool = new Tool()
     this.movePointsTool.onMouseMove = (event) => {
@@ -53,17 +54,20 @@ class HandlesManager {
       this.handles.forEach((h) => {
         if (h.hitTest(event.point)) {
           this._setHoverHandle(h)
+          this.app.setCursor("grab")
           exists = true
         }
       })
       if (!exists) {
         this._setHoverHandle(null)
+        this.app.setCursor(null)
       }
     }
     this.movePointsTool.onMouseDown = (event) => {
       if (this.hoverHandle) {
         this.hoverHandle.setColor(HANDLE_ACTIVE)
         this.hoverHandle.beginDrag(event.point)
+        this.app.setCursor("grabbing")
       }
     }
     this.movePointsTool.onMouseDrag = (event) => {
@@ -75,6 +79,7 @@ class HandlesManager {
       if (this.hoverHandle) {
         this.hoverHandle.setColor(HANDLE_HOVER)
         this.hoverHandle.endDrag(null)
+        this.app.setCursor("grab")
       }
     }
   }
@@ -100,7 +105,7 @@ class HandlesManager {
 
 class CanvasApp {
   constructor() {
-    this.handleManager = new HandlesManager()
+    this.handleManager = new HandlesManager(this)
     this.handleManager.register(new Handle(new Point(0,0)))
     this.handleManager.register(new Handle(new Point(15,0)))
     this.handleManager.register(new SnapHandle(new Point(15,15)))
@@ -109,21 +114,32 @@ class CanvasApp {
 
 
   }
+
+  onMouseCursorChange(callback) { this._onMouseCursorChange = callback }
+  setCursor(cursor) { this._onMouseCursorChange(cursor) }
 }
 
 class Root extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {cursor: null}
+  }
+
   componentDidMount() {
     paper.install(window)
     paper.setup(this.canvas)
     paper.view.center = [0,0]
     this.app = new CanvasApp()
+    this.app.onMouseCursorChange((cursor) => {
+      this.setState((prevState, props) => ({cursor: cursor}))
+    })
   }
 
   render() {
     return (<div className="root">
       <div className="canvas-container">
         <h1>Almixcomi</h1>
-        <canvas id="canvas" data-paper-resize="true"
+        <canvas id="canvas" data-paper-resize="true" className={`cursor--${this.state.cursor}`}
           ref={(d) => { this.canvas = d }}></canvas>
       </div>
       <div className="footer">

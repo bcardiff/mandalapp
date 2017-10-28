@@ -28,10 +28,12 @@ $toolbal-height: 4em;
 }
 
 .cursor--grab {
+  cursor: -webkit-grab;
   cursor: grab;
 }
 
 .cursor--grabbing {
+  cursor: -webkit-grabbing;
   cursor: grabbing;
 }
 
