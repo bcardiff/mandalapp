@@ -4,6 +4,10 @@ import Emitter from 'component-emitter'
 
 const TOOL_STROKE = '#c0c0c0'
 
+function range(start, end) {
+  return new Array(end - start + 1).fill().map((d, i) => i + start)
+}
+
 class SliceCountHandle extends Handle {
   constructor(tool) {
     super(SliceCountHandle._calcHandlePosition(tool))
@@ -13,16 +17,23 @@ class SliceCountHandle extends Handle {
     this.tool.onChanged(() => {
       this.updatePosition(SliceCountHandle._calcHandlePosition(this.tool))
     })
+    this.onMoved((point) => this.tool.setSlices(this._nearestRection(point).slices))
   }
 
   coerceCoordinate(point) {
-    return point
-    // return new Point(Math.round(point.x / 10) * 10, Math.round(point.y / 10) * 10)
+    return this._nearestRection(point).point
   }
 
   static _calcHandlePosition(tool) {
     const {startPoint, sliceAngle, center} = tool.layoutInfo()
     return startPoint.rotate(sliceAngle, center)
+  }
+
+  _nearestRection(point) {
+    const {startPoint, sliceAngle, center} = this.tool.layoutInfo()
+    return range(2, 30).filter(n => n % 2 == 0)
+      .map(ns => ({slices: ns, point: startPoint.rotate(360.0 / ns, center)}))
+      .reduce((res, p) => point.getDistance(res.point) < point.getDistance(p.point) ? res : p)
   }
 }
 
@@ -39,26 +50,28 @@ export class ReplicatorTool {
     this.shape = new Shape.Circle(center, props.radius)
     this.shape.strokeColor = TOOL_STROKE
 
-    this.groupedShapes = new Group([this.shape])
-
-    for(var i = 0; i < this.props.slices; i++) {
-      var line = new Path.Line({from: startPoint, to: center, strokeColor: TOOL_STROKE});
-      line.rotate(i * sliceAngle, center)
-      this.groupedShapes.addChild(line)
-    }
+    this.groupedLines = new Group([])
+    this.groupedShapes = new Group([this.shape, this.groupedLines])
+    this._buildLines()
 
     this.centerHandle = new Handle(center)
     this.app.handleManager.register(this.centerHandle)
-    this.centerHandle.onMoved((p) => { this._setCenter(p) })
+    this.centerHandle.onMoved((p) => { this.setCenter(p) })
 
     this.slicesCountHandle = new SliceCountHandle(this)
   }
 
-  _setCenter(point) {
+  setCenter(point) {
     const center0 = new Point(this.props.center.x, this.props.center.y)
     this.props.center = {x: point.x, y: point.y}
     this.groupedShapes.translate(point.subtract(center0))
     this._emitter.emit('changed')
+  }
+
+  setSlices(count) {
+    this.props.slices = count
+    this.groupedLines.removeChildren()
+    this._buildLines()
   }
 
   layoutInfo() {
@@ -71,5 +84,15 @@ export class ReplicatorTool {
 
   onChanged(callback) {
     this._emitter.on('changed', callback)
+  }
+
+  _buildLines() {
+    const {startPoint, sliceAngle, center} = this.layoutInfo()
+
+    for(var i = 0; i < this.props.slices; i++) {
+      var line = new Path.Line({from: startPoint, to: center, strokeColor: TOOL_STROKE});
+      line.rotate(i * sliceAngle, center)
+      this.groupedLines.addChild(line)
+    }
   }
 }

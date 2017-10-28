@@ -1,4 +1,5 @@
 import paper from 'paper'
+import Emitter from 'component-emitter'
 
 const HANDLE_DEFAULT = '#ccc'
 const HANDLE_HOVER = '#aaa'
@@ -7,6 +8,7 @@ const HANDLE_SIZE = 12
 
 export class Handle {
   constructor(point) {
+    this._emitter = new Emitter()
     this.shape = new Shape.Circle(point, HANDLE_SIZE / 2)
     this.setColor(HANDLE_DEFAULT)
   }
@@ -38,9 +40,7 @@ export class Handle {
 
   userMovedTo(point) {
     this.shape.position = this.coerceCoordinate(this.userInteractionDelta.transform(point))
-    if (this._onMoved) {
-      this._onMoved(this.shape.position)
-    }
+    this._emitter.emit('moved', this.shape.position)
   }
 
   updatePosition(point) {
@@ -48,10 +48,10 @@ export class Handle {
   }
 
   coerceCoordinate(point) {
-    return point;
+    return point
   }
 
   onMoved(callback) {
-    this._onMoved = callback
+    this._emitter.on('moved', callback)
   }
 }
