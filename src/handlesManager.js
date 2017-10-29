@@ -50,7 +50,11 @@ export class HandlesManager {
     this.handles.add(handle)
   }
 
-  enableUserInteraction() {
+  activate() {
     this.movePointsTool.activate()
+  }
+
+  deactivate() {
+
   }
 }

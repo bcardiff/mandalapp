@@ -27,6 +27,10 @@ $toolbal-height: 4em;
   height: 100%;
 }
 
+.cursor--default {
+  cursor: inherit;
+}
+
 .cursor--grab {
   cursor: -webkit-grab;
   cursor: grab;
@@ -35,6 +39,18 @@ $toolbal-height: 4em;
 .cursor--grabbing {
   cursor: -webkit-grabbing;
   cursor: grabbing;
+}
+
+.cursor--move {
+  cursor: move;
+}
+
+.cursor--crosshair {
+  cursor: crosshair;
+}
+
+.cursor--none {
+  cursor: none;
 }
 
 h1 {

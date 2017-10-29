@@ -3,9 +3,39 @@ import {Handle} from './handle'
 import Emitter from 'component-emitter'
 
 const TOOL_STROKE = '#c0c0c0'
+const MIN_RADIUS = 10
 
 function range(start, end) {
   return new Array(end - start + 1).fill().map((d, i) => i + start)
+}
+
+
+class RadiusHandle extends Handle {
+  constructor(tool) {
+    super(RadiusHandle._calcHandlePosition(tool))
+    this.tool = tool
+    this.tool.app.handleManager.register(this)
+
+    this.tool.onChanged(() => {
+      this.updatePosition(RadiusHandle._calcHandlePosition(this.tool))
+    })
+    this.onMoved((point) => this.tool.setRadius(this._nearestRection(point).radius))
+  }
+
+  coerceCoordinate(point) {
+    return this._nearestRection(point).point
+  }
+
+  static _calcHandlePosition(tool) {
+    return tool.layoutInfo().startPoint
+  }
+
+  _nearestRection(point) {
+    // TODO use startPoint--center angle
+    const {center} = this.tool.layoutInfo()
+    const radius = Math.max(center.x - point.x, MIN_RADIUS)
+    return {radius, point: new Point(center.x - radius, center.y)}
+  }
 }
 
 class SliceCountHandle extends Handle {
@@ -43,6 +73,8 @@ export class ReplicatorTool {
     this.app = app
     this.props = props
 
+    this.app.guidesLayer.activate()
+
     const center = new Point(props.center.x, props.center.y)
     const startPoint = new Point(center.x - this.props.radius, center.y)
     const sliceAngle = 360.0 / this.props.slices
@@ -59,6 +91,7 @@ export class ReplicatorTool {
     this.centerHandle.onMoved((p) => { this.setCenter(p) })
 
     this.slicesCountHandle = new SliceCountHandle(this)
+    this.radiusHandle = new RadiusHandle(this)
   }
 
   setCenter(point) {
@@ -68,10 +101,18 @@ export class ReplicatorTool {
     this._emitter.emit('changed')
   }
 
+  setRadius(radius) {
+    radius = Math.max(radius, MIN_RADIUS)
+    this.props.radius = radius
+    this.shape.radius = radius
+    this._buildLines()
+    this._emitter.emit('changed')
+  }
+
   setSlices(count) {
     this.props.slices = count
-    this.groupedLines.removeChildren()
     this._buildLines()
+    this._emitter.emit('changed')
   }
 
   layoutInfo() {
@@ -89,6 +130,7 @@ export class ReplicatorTool {
   _buildLines() {
     const {startPoint, sliceAngle, center} = this.layoutInfo()
 
+    this.groupedLines.removeChildren()
     for(var i = 0; i < this.props.slices; i++) {
       var line = new Path.Line({from: startPoint, to: center, strokeColor: TOOL_STROKE});
       line.rotate(i * sliceAngle, center)
