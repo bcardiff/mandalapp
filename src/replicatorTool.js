@@ -1,6 +1,7 @@
 import paper from 'paper'
-import {Handle} from './handle'
 import Emitter from 'component-emitter'
+import {Handle} from './handle'
+import {TraceBuilder} from './traceBuilder'
 
 const TOOL_STROKE = '#c0c0c0'
 const MIN_RADIUS = 10
@@ -8,7 +9,6 @@ const MIN_RADIUS = 10
 function range(start, end) {
   return new Array(end - start + 1).fill().map((d, i) => i + start)
 }
-
 
 class RadiusHandle extends Handle {
   constructor(tool) {
@@ -114,6 +114,30 @@ export class ReplicatorTool {
     this._buildLines()
     this._emitter.emit('changed')
   }
+
+  drawingAt(point) {
+    if (this.shape.contains(point)) {
+      const {center, sliceAngle} = this.layoutInfo()
+      if (this.traces == null) {
+        // this.originalSliceIndex = this.getSliceIndex(point)
+        this.traces = range(0, this.props.slices - 1)
+          .map(s => new TraceBuilder(this.app))
+      }
+      this.traces.forEach((t, s) => t.append(point.rotate(s * sliceAngle, center)))
+    } else {
+      this.traces = null
+    }
+  }
+
+  stopDrawing() {
+    this.traces = null
+  }
+
+  // getSliceIndex(point) {
+  //   const {center, startPoint, sliceAngle} = this.layoutInfo()
+  //   const sliceIndex = (Math.floor(startPoint.subtract(center).getDirectedAngle(point.subtract(center)) / sliceAngle) + this.props.slices) % this.props.slices
+  //   return sliceIndex
+  // }
 
   layoutInfo() {
     const center = new Point(this.props.center.x, this.props.center.y)

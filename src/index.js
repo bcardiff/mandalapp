@@ -6,10 +6,11 @@ import Emitter from 'component-emitter'
 import {Handle} from './handle'
 import {HandlesManager} from './handlesManager'
 import {ReplicatorTool} from './replicatorTool'
+import {TraceBuilder} from './traceBuilder'
 
 class SnapHandle extends Handle {
   coerceCoordinate(point) {
-    return new Point(Math.round(point.x / 10) * 10, Math.round(point.y / 10) * 10);
+    return new Point(Math.round(point.x / 10) * 10, Math.round(point.y / 10) * 10)
   }
 }
 
@@ -34,15 +35,17 @@ class PencilCommand {
       }
     }
     this.tool.onMouseDown = (event) => {
-      this.app.drawLayer.activate()
-      this.drawingPath = new Path()
-      this.drawingPath.strokeColor = this.app.strokeColor()
-      this.drawingPath.strokeWidth = this.app.strokeWidth()
-      this.drawingPath.add(event.point)
+      this.traceBuilder = new TraceBuilder(this.app)
+      this.traceBuilder.append(event.point)
+      this.app.drawingAt(event.point)
     }
     this.tool.onMouseDrag = (event) => {
       this.shape.position = event.point
-      this.drawingPath.add(event.point)
+      this.traceBuilder.append(event.point)
+      this.app.drawingAt(event.point)
+    }
+    this.tool.onMouseUp = (event) => {
+      this.app.stopDrawing()
     }
   }
 
@@ -62,19 +65,27 @@ class CanvasApp {
   constructor() {
     this._emitter = new Emitter()
     this.handleManager = new HandlesManager(this)
-    this.handleManager.register(new Handle(new Point(0,0)))
-    this.handleManager.register(new Handle(new Point(15,0)))
-    this.handleManager.register(new SnapHandle(new Point(15,15)))
-    // this.point = new Shape.Circle(new Point(0,0), 3)
-    // this.point.strokeColor = 'black';
+    // this.handleManager.register(new Handle(new Point(0,0)))
+    // this.handleManager.register(new Handle(new Point(15,0)))
+    // this.handleManager.register(new SnapHandle(new Point(15,15)))
 
     this.pencilCommand = new PencilCommand(this)
 
     this.guidesLayer = new Layer()
     this.drawLayer = new Layer()
 
-    new ReplicatorTool(this, {center: {x: 30, y: 30}, radius: 80, slices: 8})
-    new ReplicatorTool(this, {center: {x: -130, y: -50}, radius: 90, slices: 8})
+    this.replicators = []
+
+    this.newReplicator({center: {x: 0, y: 0}, radius: 150, slices: 10})
+    this.newReplicator({center: {x: -200, y: 150}, radius: 90, slices: 8})
+  }
+
+  drawingAt(point) {
+    this.replicators.forEach(r => r.drawingAt(point))
+  }
+
+  stopDrawing() {
+    this.replicators.forEach(r => r.stopDrawing())
   }
 
   onMouseCursorChange(callback) { this._emitter.on("changeCursor", callback) }
@@ -90,8 +101,9 @@ class CanvasApp {
     this.pencilCommand.deactivate()
   }
 
-  newReplicator() {
-    new ReplicatorTool(this, {center: {x: 0, y: 0}, radius: 150, slices: 8})
+  newReplicator(props) {
+    props = {center: {x: 0, y: 0}, radius: 150, slices: 8, ...props}
+    this.replicators.push(new ReplicatorTool(this, props))
   }
 
   strokeColor() { return 'black' }
