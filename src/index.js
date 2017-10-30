@@ -30,9 +30,10 @@ class PencilCommand {
         this.app.drawLayer.activate()
         this.shape = new Group([
           new Shape.Circle({center: point, radius: this.app.strokeWidth() + STROKE_LENS_MARGIN, strokeColor: this.app.strokeColor() }),
-          new Shape.Circle({center: point, radius: this.app.strokeWidth(), fillColor: this.app.strokeColor() }),
+          this.app.buildTracePreview(point),
         ])
       }
+      this.app.previewAt(point)
     }
     this.tool.onMouseDown = (event) => {
       this.traceBuilder = new TraceBuilder(this.app)
@@ -78,6 +79,14 @@ class CanvasApp {
 
     this.newReplicator({center: {x: 0, y: 0}, radius: 150, slices: 10})
     this.newReplicator({center: {x: -200, y: 150}, radius: 90, slices: 8})
+  }
+
+  buildTracePreview(point) {
+    return new Shape.Circle({center: point, radius: this.strokeWidth(), fillColor: this.strokeColor() })
+  }
+
+  previewAt(point) {
+    this.replicators.forEach(r => r.previewAt(point))
   }
 
   drawingAt(point) {

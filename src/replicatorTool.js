@@ -115,6 +115,23 @@ export class ReplicatorTool {
     this._emitter.emit('changed')
   }
 
+  previewAt(point) {
+    if (this.shape.contains(point)) {
+      const {center, sliceAngle} = this.layoutInfo()
+      if (this.previews == null) {
+        this.previews = range(0, this.props.slices - 1)
+          .map(s => this.app.buildTracePreview(point.rotate(s * sliceAngle, center)))
+      } else {
+        this.previews.forEach((p, s) => p.position = point.rotate(s * sliceAngle, center))
+      }
+    } else {
+      if (this.previews != null) {
+        this.previews.forEach(p => p.remove())
+        this.previews = null
+      }
+    }
+  }
+
   drawingAt(point) {
     if (this.shape.contains(point)) {
       const {center, sliceAngle} = this.layoutInfo()
