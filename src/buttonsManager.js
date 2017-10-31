@@ -27,7 +27,7 @@ export class ButtonsManager {
   }
 
   deactivate() {
-
+    this.buttons.forEach(b => { b.hide() })
   }
 
   onMouseMove(event) {

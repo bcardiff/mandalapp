@@ -16,11 +16,21 @@ export class HandlesManager {
   }
 
   deactivate() {
-    // TODO hide handles
+    this.handles.forEach(h => { h.hide() })
+  }
+
+  _displayButtonsAt(point) {
+    this.handles.forEach(h => {
+      if (h.visibleHitTest(point)) {
+        h.show()
+      } else {
+        h.hide()
+      }
+    })
   }
 
   onMouseMove(event) {
-    // TODO show handles
+    this._displayButtonsAt(event.point)
 
     var exists = false
     this.handles.forEach((h) => {

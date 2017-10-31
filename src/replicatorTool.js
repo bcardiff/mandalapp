@@ -11,6 +11,30 @@ function range(start, end) {
   return new Array(end - start + 1).fill().map((d, i) => i + start)
 }
 
+class CenterHandle extends Handle {
+  constructor(tool) {
+    super(CenterHandle._calcHandlePosition(tool))
+    this.tool = tool
+    this.tool.app.handlesManager.register(this)
+
+    this.tool.onChanged(() => {
+      this.updatePosition(CenterHandle._calcHandlePosition(this.tool))
+    })
+    this.onMoved((point) => this.tool.setCenter(point))
+  }
+
+  visibleHitTest(point) { return this.tool.isNear(point) }
+
+  static _calcHandlePosition(tool) {
+    return tool.layoutInfo().center
+  }
+
+  remove() {
+    super.remove()
+    this.tool.app.handlesManager.unregister(this)
+  }
+}
+
 class RadiusHandle extends Handle {
   constructor(tool) {
     super(RadiusHandle._calcHandlePosition(tool))
@@ -22,6 +46,8 @@ class RadiusHandle extends Handle {
     })
     this.onMoved((point) => this.tool.setRadius(this._nearestRection(point).radius))
   }
+
+  visibleHitTest(point) { return this.tool.isNear(point) }
 
   coerceCoordinate(point) {
     return this._nearestRection(point).point
@@ -55,6 +81,8 @@ class SliceCountHandle extends Handle {
     })
     this.onMoved((point) => this.tool.setSlices(this._nearestRection(point).slices))
   }
+
+  visibleHitTest(point) { return this.tool.isNear(point) }
 
   coerceCoordinate(point) {
     return this._nearestRection(point).point
@@ -97,9 +125,7 @@ class RemoveButton extends Button {
     return tool.layoutInfo().startPoint.add(new Point(-20, 0))
   }
 
-  visibleHitTest(point) {
-    return point.getDistance(this.tool.layoutInfo().center) < this.tool.props.radius + 40
-  }
+  visibleHitTest(point) { return this.tool.isNear(point) }
 
   remove() {
     super.remove()
@@ -126,10 +152,7 @@ export class ReplicatorTool {
     this.groupedShapes = new Group([this.shape, this.groupedLines])
     this._buildLines()
 
-    this.centerHandle = new Handle(center)
-    this.app.handlesManager.register(this.centerHandle)
-    this.centerHandle.onMoved((p) => { this.setCenter(p) })
-
+    this.centerHandle = new CenterHandle(this)
     this.slicesCountHandle = new SliceCountHandle(this)
     this.radiusHandle = new RadiusHandle(this)
 
@@ -206,6 +229,10 @@ export class ReplicatorTool {
     return {center, startPoint, sliceAngle}
   }
 
+  isNear(point) {
+    return point.getDistance(this.layoutInfo().center) < this.props.radius + 40
+  }
+
   onChanged(callback) {
     this._emitter.on('changed', callback)
   }
@@ -213,9 +240,7 @@ export class ReplicatorTool {
   remove() {
     this.groupedShapes.remove()
 
-    this.app.handlesManager.unregister(this.centerHandle)
     this.centerHandle.remove()
-
     this.slicesCountHandle.remove()
     this.radiusHandle.remove()
     this.removeButton.remove()

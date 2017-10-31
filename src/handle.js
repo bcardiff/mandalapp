@@ -11,10 +11,19 @@ export class Handle {
     this._emitter = new Emitter()
     this.shape = new Shape.Circle(point, HANDLE_SIZE / 2)
     this.setColor(HANDLE_DEFAULT)
+    this.hide()
   }
 
   remove() {
     this.shape.remove()
+  }
+
+  show() {
+    this.shape.visible = true
+  }
+
+  hide() {
+    this.shape.visible = false
   }
 
   getShape() {
@@ -30,6 +39,10 @@ export class Handle {
 
   hitTest(point) {
     return this.shape.contains(point)
+  }
+
+  visibleHitTest(point) {
+    return this.hitTest(point)
   }
 
   beginDrag(point) {
