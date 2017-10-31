@@ -20,7 +20,8 @@ module.exports = {
     new CleanWebpackPlugin(['dist']),
     new ExtractTextPlugin("styles.css"),
     new HtmlWebpackPlugin({
-      title: 'Almandala'
+      title: 'Almandala',
+      template: path.resolve(__dirname, './src/template.ejs')
     }),
   ],
   module: {

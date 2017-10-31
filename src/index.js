@@ -2,6 +2,7 @@ import css from './app.scss'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import paper from 'paper'
+import {Button} from 'semantic-ui-react'
 import {CanvasApp} from './canvasApp'
 
 class Root extends React.Component {
@@ -25,14 +26,13 @@ class Root extends React.Component {
   render() {
     return (<div className="root">
       <div className="canvas-container">
-        <h1>Almixcomi</h1>
         <canvas id="canvas" data-paper-resize="true" className={`cursor--${this.state.cursor}`}
           ref={(d) => { this.canvas = d }}></canvas>
       </div>
       <div className="footer">
-        <button type="button" onClick={() => this.app.activatePointer()}>Pointer</button>
-        <button type="button" onClick={() => this.app.newReplicator()}>Replicator</button>
-        <button type="button" onClick={() => this.app.activatePencil()}>Pencil</button>
+        <Button circular icon='mouse pointer' onClick={() => this.app.activatePointer()} />
+        <Button circular icon='sun' onClick={() => this.app.newReplicator()} />
+        <Button circular color='black' onClick={() => this.app.activatePencil()}>&nbsp;</Button>
       </div>
     </div>)
   }
