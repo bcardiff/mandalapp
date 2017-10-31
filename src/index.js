@@ -5,8 +5,11 @@ import paper from 'paper'
 import Emitter from 'component-emitter'
 import {Handle} from './handle'
 import {HandlesManager} from './handlesManager'
+import {ButtonsManager} from './buttonsManager'
 import {ReplicatorTool} from './replicatorTool'
 import {TraceBuilder} from './traceBuilder'
+import {Button} from './button'
+import {ChangeReplicatorsCommand} from './changeReplicatorsCommand'
 
 class SnapHandle extends Handle {
   coerceCoordinate(point) {
@@ -65,17 +68,16 @@ class PencilCommand {
 class CanvasApp {
   constructor() {
     this._emitter = new Emitter()
-    this.handleManager = new HandlesManager(this)
-    // this.handleManager.register(new Handle(new Point(0,0)))
-    // this.handleManager.register(new Handle(new Point(15,0)))
-    // this.handleManager.register(new SnapHandle(new Point(15,15)))
+    this.handlesManager = new HandlesManager(this)
+    this.buttonsManager = new ButtonsManager(this)
 
     this.pencilCommand = new PencilCommand(this)
+    this.changeReplicatorsCommand = new ChangeReplicatorsCommand(this)
 
     this.guidesLayer = new Layer()
     this.drawLayer = new Layer()
 
-    this.replicators = []
+    this.replicators = new Set()
 
     this.newReplicator({center: {x: 0, y: 0}, radius: 150, slices: 10})
     this.newReplicator({center: {x: -200, y: 150}, radius: 90, slices: 8})
@@ -101,18 +103,23 @@ class CanvasApp {
   setCursor(cursor) { this._emitter.emit("changeCursor", cursor) }
 
   activatePencil() {
-    this.handleManager.deactivate()
+    this.changeReplicatorsCommand.deactivate()
     this.pencilCommand.activate()
   }
 
   activatePointer() {
-    this.handleManager.activate()
+    this.changeReplicatorsCommand.activate()
     this.pencilCommand.deactivate()
   }
 
   newReplicator(props) {
     props = {center: {x: 0, y: 0}, radius: 150, slices: 8, ...props}
-    this.replicators.push(new ReplicatorTool(this, props))
+    this.replicators.add(new ReplicatorTool(this, props))
+  }
+
+  removeReplicator(replicator) {
+    this.replicators.delete(replicator)
+    replicator.remove()
   }
 
   strokeColor() { return 'black' }

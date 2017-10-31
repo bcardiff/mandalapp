@@ -2,6 +2,7 @@ import paper from 'paper'
 import Emitter from 'component-emitter'
 import {Handle} from './handle'
 import {TraceBuilder} from './traceBuilder'
+import {Button} from './button'
 
 const TOOL_STROKE = '#c0c0c0'
 const MIN_RADIUS = 10
@@ -14,7 +15,7 @@ class RadiusHandle extends Handle {
   constructor(tool) {
     super(RadiusHandle._calcHandlePosition(tool))
     this.tool = tool
-    this.tool.app.handleManager.register(this)
+    this.tool.app.handlesManager.register(this)
 
     this.tool.onChanged(() => {
       this.updatePosition(RadiusHandle._calcHandlePosition(this.tool))
@@ -36,13 +37,18 @@ class RadiusHandle extends Handle {
     const radius = Math.max(center.x - point.x, MIN_RADIUS)
     return {radius, point: new Point(center.x - radius, center.y)}
   }
+
+  remove() {
+    super.remove()
+    this.tool.app.handlesManager.unregister(this)
+  }
 }
 
 class SliceCountHandle extends Handle {
   constructor(tool) {
     super(SliceCountHandle._calcHandlePosition(tool))
     this.tool = tool
-    this.tool.app.handleManager.register(this)
+    this.tool.app.handlesManager.register(this)
 
     this.tool.onChanged(() => {
       this.updatePosition(SliceCountHandle._calcHandlePosition(this.tool))
@@ -64,6 +70,40 @@ class SliceCountHandle extends Handle {
     return range(2, 30).filter(n => n % 2 == 0)
       .map(ns => ({slices: ns, point: startPoint.rotate(360.0 / ns, center)}))
       .reduce((res, p) => point.getDistance(res.point) < point.getDistance(p.point) ? res : p)
+  }
+
+  remove() {
+    super.remove()
+    this.tool.app.handlesManager.unregister(this)
+  }
+}
+
+class RemoveButton extends Button {
+  constructor(tool) {
+    super(RemoveButton._calcHandlePosition(tool), "x")
+    this.tool = tool
+    this.tool.app.buttonsManager.register(this)
+
+    this.tool.onChanged(() => {
+      this.updatePosition(RemoveButton._calcHandlePosition(this.tool))
+    })
+
+    this.onClick(() => {
+      tool.app.removeReplicator(tool)
+    })
+  }
+
+  static _calcHandlePosition(tool) {
+    return tool.layoutInfo().startPoint.add(new Point(-20, 0))
+  }
+
+  visibleHitTest(point) {
+    return point.getDistance(this.tool.layoutInfo().center) < this.tool.props.radius + 40
+  }
+
+  remove() {
+    super.remove()
+    this.tool.app.buttonsManager.unregister(this)
   }
 }
 
@@ -87,11 +127,13 @@ export class ReplicatorTool {
     this._buildLines()
 
     this.centerHandle = new Handle(center)
-    this.app.handleManager.register(this.centerHandle)
+    this.app.handlesManager.register(this.centerHandle)
     this.centerHandle.onMoved((p) => { this.setCenter(p) })
 
     this.slicesCountHandle = new SliceCountHandle(this)
     this.radiusHandle = new RadiusHandle(this)
+
+    this.removeButton = new RemoveButton(this)
   }
 
   setCenter(point) {
@@ -166,6 +208,17 @@ export class ReplicatorTool {
 
   onChanged(callback) {
     this._emitter.on('changed', callback)
+  }
+
+  remove() {
+    this.groupedShapes.remove()
+
+    this.app.handlesManager.unregister(this.centerHandle)
+    this.centerHandle.remove()
+
+    this.slicesCountHandle.remove()
+    this.radiusHandle.remove()
+    this.removeButton.remove()
   }
 
   _buildLines() {

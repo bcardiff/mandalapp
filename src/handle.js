@@ -13,6 +13,10 @@ export class Handle {
     this.setColor(HANDLE_DEFAULT)
   }
 
+  remove() {
+    this.shape.remove()
+  }
+
   getShape() {
     return this.shape
   }
