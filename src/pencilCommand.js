@@ -38,8 +38,9 @@ export class PencilCommand {
   }
 
   activate() {
+    this.deactivate()
     this.tool.activate()
-    this.shape = null;
+    this.shape = null
   }
 
   deactivate() {

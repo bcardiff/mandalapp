@@ -24,6 +24,7 @@ export class CanvasApp {
 
     this.newReplicator({center: {x: 0, y: 0}, radius: 150, slices: 10})
     this.newReplicator({center: {x: -200, y: 150}, radius: 90, slices: 8})
+    this.mode = null
   }
 
   buildTracePreview(point) {
@@ -45,19 +46,29 @@ export class CanvasApp {
   onMouseCursorChange(callback) { this._emitter.on("changeCursor", callback) }
   setCursor(cursor) { this._emitter.emit("changeCursor", cursor) }
 
-  activatePencil() {
+  onModeChanged(callback) { this._emitter.on("modeChanged", callback) }
+  setMode(mode) {
+    this.mode = mode
+    this._emitter.emit("modeChanged", mode)
+  }
+
+  activatePencil(color) {
+    this.color = color
     this.changeReplicatorsCommand.deactivate()
     this.pencilCommand.activate()
+    this.setMode('pencil')
   }
 
   activatePointer() {
     this.changeReplicatorsCommand.activate()
     this.pencilCommand.deactivate()
+    this.setMode('pointer')
   }
 
   newReplicator(props) {
     props = {center: {x: 0, y: 0}, radius: 150, slices: 8, ...props}
     this.replicators.add(new ReplicatorTool(this, props))
+    this.activatePointer()
   }
 
   removeReplicator(replicator) {
@@ -65,6 +76,6 @@ export class CanvasApp {
     replicator.remove()
   }
 
-  strokeColor() { return 'black' }
+  strokeColor() { return this.color }
   strokeWidth() { return 1 }
 }

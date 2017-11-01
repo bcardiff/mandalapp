@@ -8,7 +8,12 @@ import {CanvasApp} from './canvasApp'
 class Root extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {cursor: null}
+    this.state = {
+      cursor: null,
+      mode: null,
+      colors: ["#DB5461", "#7AC74F", "#FFE74C", "#2AB7CA", "#540D6E"],
+      selectedColorIndex: null,
+    }
   }
 
   componentDidMount() {
@@ -19,8 +24,26 @@ class Root extends React.Component {
     this.app.onMouseCursorChange((cursor) => {
       this.setState((prevState, props) => ({cursor: cursor}))
     })
+    this.app.onModeChanged((mode) => {
+      this.setState((prevState, props) => ({mode: mode}))
+    })
 
-    this.app.activatePencil()
+    this.colorClicked(0)
+  }
+
+  colorClicked(index) {
+    this.setState((prevState, props) => ({selectedColorIndex: index}),
+      () => {
+        this.app.activatePencil(this.state.colors[index]);
+      })
+  }
+
+  isPointerActiver() {
+    return this.state.mode == 'pointer'
+  }
+
+  isColorActive(index) {
+    return this.state.mode == 'pencil' && index == this.state.selectedColorIndex
   }
 
   render() {
@@ -30,9 +53,14 @@ class Root extends React.Component {
           ref={(d) => { this.canvas = d }}></canvas>
       </div>
       <div className="footer">
-        <Button circular icon='mouse pointer' onClick={() => this.app.activatePointer()} />
-        <Button circular icon='sun' onClick={() => this.app.newReplicator()} />
-        <Button circular color='black' onClick={() => this.app.activatePencil()}>&nbsp;</Button>
+        <Button icon='mouse pointer' onClick={() => this.app.activatePointer()} />
+        <Button icon='sun' onClick={() => this.app.newReplicator()} />
+        {this.state.colors.map((color, i) =>
+          <Button key={i}
+            icon={this.isColorActive(i) ? "paint brush" : "circle outline"}
+            style={{backgroundColor: color}}
+            onClick={() => this.colorClicked(i)}></Button>
+        )}
       </div>
     </div>)
   }
