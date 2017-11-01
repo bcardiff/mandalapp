@@ -2,7 +2,8 @@ import css from './app.scss'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import paper from 'paper'
-import {Button} from 'semantic-ui-react'
+import {Button, Modal} from 'semantic-ui-react'
+import {ChromePicker} from 'react-color';
 import {CanvasApp} from './canvasApp'
 
 class Root extends React.Component {
@@ -13,6 +14,7 @@ class Root extends React.Component {
       mode: null,
       colors: ["#DB5461", "#7AC74F", "#FFE74C", "#2AB7CA", "#540D6E"],
       selectedColorIndex: null,
+      modalOpen: false
     }
   }
 
@@ -32,10 +34,14 @@ class Root extends React.Component {
   }
 
   colorClicked(index) {
-    this.setState((prevState, props) => ({selectedColorIndex: index}),
-      () => {
-        this.app.activatePencil(this.state.colors[index]);
-      })
+    if (this.state.selectedColorIndex != index) {
+      this.setState((prevState, props) => ({selectedColorIndex: index}),
+        () => {
+          this.app.activatePencil(this.state.colors[index])
+        })
+    } else {
+      this.setState((prevState, props) => ({modalOpen: !prevState.modalOpen}))
+    }
   }
 
   isPointerActiver() {
@@ -44,6 +50,20 @@ class Root extends React.Component {
 
   isColorActive(index) {
     return this.state.mode == 'pencil' && index == this.state.selectedColorIndex
+  }
+
+  handleClose() {
+    this.setState((prevState, props) => ({modalOpen: false}))
+  }
+
+  changeSelectedColor(color) {
+    var newColors = this.state.colors.slice(0)
+    const index = this.state.selectedColorIndex
+    newColors[index] = color.hex
+    this.setState((prevState, props) => ({colors: newColors}),
+      () => {
+        this.app.activatePencil(this.state.colors[index])
+      })
   }
 
   render() {
@@ -62,6 +82,12 @@ class Root extends React.Component {
             onClick={() => this.colorClicked(i)}></Button>
         )}
       </div>
+
+      <Modal open={this.state.modalOpen} onClose={() => this.handleClose()} basic size="tiny" dimmer={true}>
+        <Modal.Content>
+          <ChromePicker color={ this.state.colors[this.state.selectedColorIndex] } onChange={ color => this.changeSelectedColor(color) } />
+        </Modal.Content>
+      </Modal>
     </div>)
   }
 }

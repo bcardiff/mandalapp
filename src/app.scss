@@ -2,6 +2,14 @@ body {
   margin: 0;
 }
 
+.root {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
 $toolbal-height: 4em;
 
 .canvas-container {
@@ -55,9 +63,7 @@ $toolbal-height: 4em;
   cursor: none;
 }
 
-h1 {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+.ui.tiny.modal {
+  width: 225px;
+  margin: 0px 0px 0px -112px;
 }
