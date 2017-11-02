@@ -82,6 +82,11 @@ class Root extends React.Component {
     this.app.activatePointer()
   }
 
+  newReplicator() {
+    this.showGuides(true)
+    this.app.newReplicator()
+  }
+
   render() {
     return (<div className="root">
       <div className="canvas-container">
@@ -91,7 +96,7 @@ class Root extends React.Component {
       <div className="footer">
         <Button icon={this.state.showGuides ? "unhide" : "hide"} disabled={this.isPointerActive()} onClick={() => this.showGuides(!this.state.showGuides)} />
         <Button icon='mouse pointer' color={this.isPointerActive() ? "grey" : null} onClick={() => this.activatePointer()} />
-        <Button icon='sun' onClick={() => this.app.newReplicator()} />
+        <Button icon='sun' onClick={() => this.newReplicator()} />
         {this.state.colors.map((color, i) =>
           <Button key={i}
             icon={this.isColorActive(i) ? "paint brush" : "circle outline"}
