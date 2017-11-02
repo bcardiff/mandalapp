@@ -5,6 +5,7 @@ export class ChangeReplicatorsCommand {
     this.app = app
 
     this.tool.onMouseMove = (event) => {
+      this.app.setCursor(null)
       this.app.buttonsManager.onMouseMove(event)
       this.app.handlesManager.onMouseMove(event)
     }

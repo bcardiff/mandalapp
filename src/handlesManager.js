@@ -43,7 +43,6 @@ export class HandlesManager {
     })
     if (!exists) {
       this._setHoverHandle(null)
-      this.app.setCursor(null)
     }
   }
 

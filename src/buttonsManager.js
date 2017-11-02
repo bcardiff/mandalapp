@@ -37,6 +37,7 @@ export class ButtonsManager {
     this.buttons.forEach((b) => {
       if (!exists && b.hitTest(event.point)) {
         b.hover()
+        this.app.setCursor("pointer")
         exists = true
       } else {
         b.blur()
