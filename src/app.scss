@@ -1,0 +1,73 @@
+body {
+  margin: 0;
+}
+
+.root {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+$toolbal-height: 4em;
+
+.canvas-container {
+  position: absolute;
+  top: 0;
+  bottom: $toolbal-height;
+  left: 0;
+  right: 0;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  height: $toolbal-height;
+  left: 0;
+  right: 0;
+  background-color: #d7c4e8;
+  text-align: center;
+  padding: 0.5em;
+}
+
+#canvas {
+  background-color: white;
+  width: 100%;
+  height: 100%;
+}
+
+.cursor--default {
+  cursor: inherit;
+}
+
+.cursor--grab {
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.cursor--grabbing {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
+
+.cursor--move {
+  cursor: move;
+}
+
+.cursor--crosshair {
+  cursor: crosshair;
+}
+
+.cursor--pointer {
+  cursor: pointer;
+}
+
+.cursor--none {
+  cursor: none;
+}
+
+.ui.tiny.modal {
+  width: 225px;
+  margin: 0px 0px 0px -112px;
+}

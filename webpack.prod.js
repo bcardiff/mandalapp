@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   context: path.resolve(__dirname, './src'),
@@ -9,20 +10,17 @@ module.exports = {
     index: './index.js'
   },
   output: {
-    filename: '[name].js',
+    filename: '[name].[chunkhash].js',
     path: path.resolve(__dirname, 'dist')
-  },
-  devtool: 'eval-source-map',
-  devServer: {
-    contentBase: path.resolve(__dirname, 'dist')
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
-    new ExtractTextPlugin("styles.css"),
+    new ExtractTextPlugin("styles.[contenthash].css"),
     new HtmlWebpackPlugin({
       title: 'Almandala',
       template: path.resolve(__dirname, './src/template.ejs')
     }),
+    new UglifyJSPlugin(),
   ],
   module: {
     rules: [{
@@ -41,13 +39,9 @@ module.exports = {
       use: ExtractTextPlugin.extract({
         fallback: 'style-loader',
         use: [{
-          loader: "css-loader", options: {
-            sourceMap: true
-          }
+          loader: "css-loader"
         }, {
-          loader: "sass-loader", options: {
-            sourceMap: true
-          }
+          loader: "sass-loader"
         }]
       })
     }]
