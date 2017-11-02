@@ -23,7 +23,7 @@ class CenterHandle extends Handle {
     this.onMoved((point) => this.tool.setCenter(point))
   }
 
-  visibleHitTest(point) { return this.tool.isNear(point) }
+  visibleHitTest(point) { return this.tool.displayControls(point) }
 
   static _calcHandlePosition(tool) {
     return tool.layoutInfo().center
@@ -47,7 +47,7 @@ class RadiusHandle extends Handle {
     this.onMoved((point) => this.tool.setRadius(this._nearestRection(point).radius))
   }
 
-  visibleHitTest(point) { return this.tool.isNear(point) }
+  visibleHitTest(point) { return this.tool.displayControls(point) }
 
   coerceCoordinate(point) {
     return this._nearestRection(point).point
@@ -82,7 +82,7 @@ class SliceCountHandle extends Handle {
     this.onMoved((point) => this.tool.setSlices(this._nearestRection(point).slices))
   }
 
-  visibleHitTest(point) { return this.tool.isNear(point) }
+  visibleHitTest(point) { return this.tool.displayControls(point) }
 
   coerceCoordinate(point) {
     return this._nearestRection(point).point
@@ -125,7 +125,7 @@ class RemoveButton extends Button {
     return tool.layoutInfo().startPoint.add(new Point(-20, 0))
   }
 
-  visibleHitTest(point) { return this.tool.isNear(point) }
+  visibleHitTest(point) { return this.tool.displayControls(point) }
 
   remove() {
     super.remove()
@@ -231,6 +231,10 @@ export class ReplicatorTool {
 
   isNear(point) {
     return point.getDistance(this.layoutInfo().center) < this.props.radius + 40
+  }
+
+  displayControls(point) {
+    return this.app.mode == 'pointer'
   }
 
   onChanged(callback) {

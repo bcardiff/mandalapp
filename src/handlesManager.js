@@ -13,6 +13,7 @@ export class HandlesManager {
   }
 
   activate() {
+    this._displayButtonsAt(null)
   }
 
   deactivate() {

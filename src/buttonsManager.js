@@ -23,7 +23,7 @@ export class ButtonsManager {
   }
 
   activate() {
-
+    this._displayButtonsAt(null)
   }
 
   deactivate() {

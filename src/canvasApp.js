@@ -52,15 +52,15 @@ export class CanvasApp {
 
   activatePencil(color) {
     this.color = color
+    this.setMode('pencil')
     this.changeReplicatorsCommand.deactivate()
     this.pencilCommand.activate()
-    this.setMode('pencil')
   }
 
   activatePointer() {
+    this.setMode('pointer')
     this.changeReplicatorsCommand.activate()
     this.pencilCommand.deactivate()
-    this.setMode('pointer')
   }
 
   newReplicator(props) {
