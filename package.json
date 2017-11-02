@@ -15,6 +15,7 @@
     "css-loader": "^0.28.7",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.5",
+    "gh-pages": "^1.0.0",
     "html-webpack-plugin": "^2.30.1",
     "node-sass": "^4.5.3",
     "sass-loader": "^6.0.6",
@@ -26,7 +27,8 @@
   "scripts": {
     "build-debug": "webpack",
     "build": "webpack --config webpack.prod.js",
-    "start": "webpack-dev-server --open"
+    "start": "webpack-dev-server --open",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "component-emitter": "component/emitter",
