@@ -95,7 +95,7 @@ class SliceCountHandle extends Handle {
 
   _nearestRection(point) {
     const {startPoint, sliceAngle, center} = this.tool.layoutInfo()
-    return range(2, 30).filter(n => n % 2 == 0)
+    return range(2, 50).filter(n => n % 2 == 0)
       .map(ns => ({slices: ns, point: startPoint.rotate(360.0 / ns, center)}))
       .reduce((res, p) => point.getDistance(res.point) < point.getDistance(p.point) ? res : p)
   }
