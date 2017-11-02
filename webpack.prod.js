@@ -10,12 +10,12 @@ module.exports = {
     index: './index.js'
   },
   output: {
-    filename: '[name].js',
+    filename: '[name].[chunkhash].js',
     path: path.resolve(__dirname, 'dist')
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
-    new ExtractTextPlugin("styles.css"),
+    new ExtractTextPlugin("styles.[contenthash].css"),
     new HtmlWebpackPlugin({
       title: 'Almandala',
       template: path.resolve(__dirname, './src/template.ejs')
