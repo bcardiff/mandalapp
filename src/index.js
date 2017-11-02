@@ -40,18 +40,18 @@ class Root extends React.Component {
   }
 
   colorClicked(index) {
-    if (this.state.selectedColorIndex != index) {
-      this.setState((prevState, props) => ({selectedColorIndex: index}),
-        () => {
-          this.app.activatePencil(this.state.colors[index])
-        })
-    } else {
-      this.setState((prevState, props) => ({modalOpen: !prevState.modalOpen}))
-    }
+    this.setState((prevState, props) => ({selectedColorIndex: index}),
+      () => {
+        this.app.activatePencil(this.state.colors[index])
+      })
   }
 
   isPointerActive() {
     return this.state.mode == 'pointer'
+  }
+
+  isPencilActive() {
+    return this.state.mode == 'pencil'
   }
 
   isColorActive(index) {
@@ -65,6 +65,13 @@ class Root extends React.Component {
   showGuides(visible) {
     this.app.showGuides(visible)
     this.setState((prevState, props) => ({showGuides: visible}))
+  }
+
+  openColorPicker() {
+    this.setState((prevState, props) => {
+      // const index = prevState.selectedColorIndex //TODO LRU & activate pencil
+      return {modalOpen: !prevState.modalOpen}//, selectedColorIndex: index}
+    })
   }
 
   changeSelectedColor(color) {
@@ -103,6 +110,7 @@ class Root extends React.Component {
             style={{backgroundColor: color}}
             onClick={() => this.colorClicked(i)}></Button>
         )}
+        <Button icon='eyedropper' disabled={!this.isPencilActive()} onClick={() => this.openColorPicker()} />
       </div>
 
       <Modal open={this.state.modalOpen} onClose={() => this.handleClose()} basic size="tiny" dimmer={true}>
