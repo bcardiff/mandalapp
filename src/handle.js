@@ -4,30 +4,42 @@ import Emitter from 'component-emitter'
 const HANDLE_DEFAULT = '#ccc'
 const HANDLE_HOVER = '#aaa'
 const HANDLE_ACTIVE = '#666'
-const HANDLE_SIZE = 12
+const HANDLE_SIZE = 24
+
+const FONT_SIZE = HANDLE_SIZE * 0.65
 
 export class Handle {
-  constructor(point) {
+  constructor(point, text) {
     this._emitter = new Emitter()
     this.shape = new Shape.Circle(point, HANDLE_SIZE / 2)
+    this.shape.fillColor = "#fff"
+
+    this.text = new PointText({
+      point: point.add(new Point(0, FONT_SIZE * 0.23)),
+      content: text,
+      fontFamily: 'Courier New',
+      fontSize: FONT_SIZE,
+      fillColor: HANDLE_DEFAULT,
+      justification: 'center'
+    })
+
     this.setColor(HANDLE_DEFAULT)
     this.hide()
   }
 
   remove() {
     this.shape.remove()
+    this.text.remove()
   }
 
   show() {
     this.shape.visible = true
+    this.text.visible = true
   }
 
   hide() {
     this.shape.visible = false
-  }
-
-  getShape() {
-    return this.shape
+    this.text.visible = false
   }
 
   setColor(color) {
@@ -52,16 +64,19 @@ export class Handle {
 
   endDrag() {
     this.setColor(HANDLE_HOVER)
-    this.userInteractionDelta = null;
+    this.userInteractionDelta = null
   }
 
   userMovedTo(point) {
-    this.shape.position = this.coerceCoordinate(this.userInteractionDelta.transform(point))
+    const newPosition = this.coerceCoordinate(this.userInteractionDelta.transform(point))
+    this.shape.position = newPosition
+    this.text.position = newPosition
     this._emitter.emit('moved', this.shape.position)
   }
 
   updatePosition(point) {
     this.shape.position = point
+    this.text.position = point
   }
 
   coerceCoordinate(point) {

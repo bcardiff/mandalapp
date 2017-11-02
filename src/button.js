@@ -1,7 +1,7 @@
 import paper from 'paper'
 import Emitter from 'component-emitter'
 
-const BUTTON_SIZE = 20
+const BUTTON_SIZE = 26
 const FONT_SIZE = BUTTON_SIZE * 0.65
 
 const BUTTON_DEFAULT = '#ccc'

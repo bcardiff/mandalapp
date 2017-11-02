@@ -13,7 +13,7 @@ function range(start, end) {
 
 class CenterHandle extends Handle {
   constructor(tool) {
-    super(CenterHandle._calcHandlePosition(tool))
+    super(CenterHandle._calcHandlePosition(tool), "c")
     this.tool = tool
     this.tool.app.handlesManager.register(this)
 
@@ -37,7 +37,7 @@ class CenterHandle extends Handle {
 
 class RadiusHandle extends Handle {
   constructor(tool) {
-    super(RadiusHandle._calcHandlePosition(tool))
+    super(RadiusHandle._calcHandlePosition(tool), "r")
     this.tool = tool
     this.tool.app.handlesManager.register(this)
 
@@ -72,7 +72,7 @@ class RadiusHandle extends Handle {
 
 class SliceCountHandle extends Handle {
   constructor(tool) {
-    super(SliceCountHandle._calcHandlePosition(tool))
+    super(SliceCountHandle._calcHandlePosition(tool), "#")
     this.tool = tool
     this.tool.app.handlesManager.register(this)
 
@@ -122,7 +122,7 @@ class RemoveButton extends Button {
   }
 
   static _calcHandlePosition(tool) {
-    return tool.layoutInfo().startPoint.add(new Point(-20, 0))
+    return tool.layoutInfo().startPoint.add(new Point(-30, 0))
   }
 
   visibleHitTest(point) { return this.tool.displayControls(point) }
