@@ -27,9 +27,14 @@ class Root extends React.Component {
       this.setState((prevState, props) => ({cursor: cursor}))
     })
     this.app.onModeChanged((mode) => {
-      this.setState((prevState, props) => ({mode: mode}))
+      this.setState((prevState, props) => {
+        const selectedColorIndex = mode == 'pointer' ? null : prevState.selectedColorIndex
+        return {mode: mode, selectedColorIndex: selectedColorIndex}
+      })
     })
 
+    const radius = Math.min(window.innerWidth / 2, window.innerHeight / 2) * 0.85;
+    this.app.newReplicator({center: {x: 0, y: 0}, radius: radius, slices: 10})
     this.colorClicked(0)
   }
 
@@ -73,7 +78,7 @@ class Root extends React.Component {
           ref={(d) => { this.canvas = d }}></canvas>
       </div>
       <div className="footer">
-        <Button icon='mouse pointer' onClick={() => this.app.activatePointer()} />
+        <Button icon='mouse pointer' color={this.isPointerActiver() ? "grey" : null} onClick={() => this.app.activatePointer()} />
         <Button icon='sun' onClick={() => this.app.newReplicator()} />
         {this.state.colors.map((color, i) =>
           <Button key={i}

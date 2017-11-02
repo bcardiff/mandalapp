@@ -22,8 +22,6 @@ export class CanvasApp {
 
     this.replicators = new Set()
 
-    this.newReplicator({center: {x: 0, y: 0}, radius: 150, slices: 10})
-    this.newReplicator({center: {x: -200, y: 150}, radius: 90, slices: 8})
     this.mode = null
   }
 
