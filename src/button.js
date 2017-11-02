@@ -12,7 +12,7 @@ export class Button {
   constructor(point, text) {
     this._emitter = new Emitter()
 
-    this.shape = new Shape.Circle(point, BUTTON_SIZE / 2)
+    this.shape = new Shape.Rectangle(new Rectangle(point.subtract(new Point(BUTTON_SIZE / 2, BUTTON_SIZE / 2)), BUTTON_SIZE), new Size(4,4))
     this.shape.strokeColor = BUTTON_DEFAULT
 
     this.text = new PointText({
