@@ -76,4 +76,8 @@ export class CanvasApp {
 
   strokeColor() { return this.color }
   strokeWidth() { return 1 }
+
+  showGuides(visible) {
+    this.guidesLayer.visible = visible
+  }
 }

@@ -14,7 +14,8 @@ class Root extends React.Component {
       mode: null,
       colors: ["#DB5461", "#7AC74F", "#FFE74C", "#2AB7CA", "#540D6E"],
       selectedColorIndex: null,
-      modalOpen: false
+      modalOpen: false,
+      showGuides: true,
     }
   }
 
@@ -49,7 +50,7 @@ class Root extends React.Component {
     }
   }
 
-  isPointerActiver() {
+  isPointerActive() {
     return this.state.mode == 'pointer'
   }
 
@@ -59,6 +60,11 @@ class Root extends React.Component {
 
   handleClose() {
     this.setState((prevState, props) => ({modalOpen: false}))
+  }
+
+  showGuides(visible) {
+    this.app.showGuides(visible)
+    this.setState((prevState, props) => ({showGuides: visible}))
   }
 
   changeSelectedColor(color) {
@@ -71,6 +77,11 @@ class Root extends React.Component {
       })
   }
 
+  activatePointer() {
+    this.showGuides(true)
+    this.app.activatePointer()
+  }
+
   render() {
     return (<div className="root">
       <div className="canvas-container">
@@ -78,7 +89,8 @@ class Root extends React.Component {
           ref={(d) => { this.canvas = d }}></canvas>
       </div>
       <div className="footer">
-        <Button icon='mouse pointer' color={this.isPointerActiver() ? "grey" : null} onClick={() => this.app.activatePointer()} />
+        <Button icon={this.state.showGuides ? "unhide" : "hide"} disabled={this.isPointerActive()} onClick={() => this.showGuides(!this.state.showGuides)} />
+        <Button icon='mouse pointer' color={this.isPointerActive() ? "grey" : null} onClick={() => this.activatePointer()} />
         <Button icon='sun' onClick={() => this.app.newReplicator()} />
         {this.state.colors.map((color, i) =>
           <Button key={i}
