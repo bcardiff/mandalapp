@@ -1,5 +1,4 @@
 import paper from 'paper'
-import {TraceBuilder} from './traceBuilder'
 
 const STROKE_LENS_MARGIN = 8
 
@@ -23,13 +22,10 @@ export class PencilCommand {
       this.app.previewAt(point)
     }
     this.tool.onMouseDown = (event) => {
-      this.traceBuilder = new TraceBuilder(this.app)
-      this.traceBuilder.append(event.point)
       this.app.drawingAt(event.point)
     }
     this.tool.onMouseDrag = (event) => {
       this.shape.position = event.point
-      this.traceBuilder.append(event.point)
       this.app.drawingAt(event.point)
     }
     this.tool.onMouseUp = (event) => {
