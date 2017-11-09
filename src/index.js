@@ -2,8 +2,10 @@ import css from './app.scss'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import paper from 'paper'
+import {saveAs} from './file-saver-patched'
+import 'blueimp-canvas-to-blob'
 import {Button, Modal} from 'semantic-ui-react'
-import {ChromePicker} from 'react-color';
+import {ChromePicker} from 'react-color'
 import {CanvasApp} from './canvasApp'
 
 class Root extends React.Component {
@@ -94,6 +96,15 @@ class Root extends React.Component {
     this.app.newReplicator()
   }
 
+  saveDrawing() {
+    this.app.saving(() => {
+      this.canvas.toBlob(blob => {
+        const sufix = new Date().toISOString().substr(0,10)
+        saveAs(blob, "almandala " + sufix + ".png")
+      })
+    })
+  }
+
   render() {
     return (<div className="root">
       <div className="canvas-container">
@@ -101,16 +112,17 @@ class Root extends React.Component {
           ref={(d) => { this.canvas = d }}></canvas>
       </div>
       <div className="footer">
+        <Button icon='save' onClick={() => this.saveDrawing()} />
         <Button icon={this.state.showGuides ? "unhide" : "hide"} disabled={this.isPointerActive()} onClick={() => this.showGuides(!this.state.showGuides)} />
         <Button icon='mouse pointer' color={this.isPointerActive() ? "grey" : null} onClick={() => this.activatePointer()} />
         <Button icon='sun' onClick={() => this.newReplicator()} />
+        <Button icon='eyedropper' disabled={!this.isPencilActive()} onClick={() => this.openColorPicker()} />
         {this.state.colors.map((color, i) =>
           <Button key={i}
             icon={this.isColorActive(i) ? "paint brush" : "circle outline"}
             style={{backgroundColor: color}}
             onClick={() => this.colorClicked(i)}></Button>
         )}
-        <Button icon='eyedropper' disabled={!this.isPencilActive()} onClick={() => this.openColorPicker()} />
       </div>
 
       <Modal open={this.state.modalOpen} onClose={() => this.handleClose()} basic size="tiny" dimmer={true}>

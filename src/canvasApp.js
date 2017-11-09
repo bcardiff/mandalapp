@@ -17,7 +17,13 @@ export class CanvasApp {
     this.pencilCommand = new PencilCommand(this)
     this.changeReplicatorsCommand = new ChangeReplicatorsCommand(this)
 
+    this.backgroundLayer = new Layer()
+    this.backgroundLayer.activate()
+    const background = new Path.Rectangle(paper.view.bounds)
+    background.fillColor = '#ffffff'
+    this.backgroundLayer.visible = false
     this.guidesLayer = new Layer()
+    this.cursorLayer = new Layer()
     this.drawLayer = new Layer()
 
     this.replicators = new Set()
@@ -79,5 +85,18 @@ export class CanvasApp {
 
   showGuides(visible) {
     this.guidesLayer.visible = visible
+  }
+
+  saving(callback) {
+    var showGuidesWas = this.guidesLayer.visible
+    this.showGuides(false)
+    this.cursorLayer.visible = false
+    this.backgroundLayer.visible = true
+    window.setTimeout(() => {
+      callback()
+      this.cursorLayer.visible = true
+      this.backgroundLayer.visible = false
+      this.showGuides(showGuidesWas)
+    }, 100)
   }
 }

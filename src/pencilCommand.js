@@ -13,7 +13,7 @@ export class PencilCommand {
         this.shape.position = point
       } else {
         this.app.setCursor("none")
-        this.app.drawLayer.activate()
+        this.app.cursorLayer.activate()
         this.shape = new Group([
           new Shape.Circle({center: point, radius: this.app.strokeWidth() + STROKE_LENS_MARGIN, strokeColor: this.app.strokeColor() }),
           this.app.buildTracePreview(point),
