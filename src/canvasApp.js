@@ -8,6 +8,17 @@ import {Button} from './button'
 import {PencilCommand} from './pencilCommand'
 import {ChangeReplicatorsCommand} from './changeReplicatorsCommand'
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min)
+  max = Math.floor(max)
+  if (min >= max) return min
+  return Math.floor(Math.random() * (max - min)) + min
+}
+
+function getRandomPointInRect(rect) {
+  return new Point(getRandomInt(rect.left, rect.right), getRandomInt(rect.top, rect.bottom))
+}
+
 export class CanvasApp {
   constructor() {
     this._emitter = new Emitter()
@@ -69,8 +80,20 @@ export class CanvasApp {
     this.pencilCommand.deactivate()
   }
 
-  newReplicator(props) {
-    props = {center: {x: 0, y: 0}, radius: 150, slices: 8, ...props}
+  newReplicator(props = {}) {
+    const safeBounds = paper.view.bounds.expand(-20)
+    const minvw = Math.min(safeBounds.width, safeBounds.height)
+    const center = props.center || getRandomPointInRect(safeBounds)
+    const radius = props.radius || getRandomInt(minvw * .2, Math.min(...[
+                  center.getDistance(safeBounds.leftCenter),
+                  center.getDistance(safeBounds.topCenter),
+                  center.getDistance(safeBounds.rightCenter),
+                  center.getDistance(safeBounds.bottomCenter)]))
+    props = {
+      center: center,
+      radius: radius,
+      slices: props.slices || getRandomInt(3, 8) * 2,
+    }
     this.replicators.add(new ReplicatorTool(this, props))
     this.activatePointer()
   }
