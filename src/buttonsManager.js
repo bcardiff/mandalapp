@@ -67,6 +67,7 @@ export class ButtonsManager {
     if (this.hoverButton && this.hoverButton.hitTest(event.point)) {
       this.hoverButton.mouseUp()
     }
+    this._displayButtonsAt(event.point)
   }
 
   _setHoverButton(button) {

@@ -133,6 +133,35 @@ class RemoveButton extends Button {
   }
 }
 
+class ModeButton extends Button {
+  constructor(tool, mode, label, deg) {
+    super(ModeButton._calcHandlePosition(tool, deg), label)
+    this.tool = tool
+    this.tool.app.buttonsManager.register(this)
+    this.mode = mode
+
+    this.tool.onChanged(() => {
+      this.updatePosition(ModeButton._calcHandlePosition(this.tool, deg))
+    })
+
+    this.onClick(() => {
+      this.tool.setMode(this.mode)
+    })
+  }
+
+  static _calcHandlePosition(tool, deg) {
+    const {startPoint, center} = tool.layoutInfo()
+    return startPoint.add(new Point(-30, 0)).rotate(deg, center)
+  }
+
+  visibleHitTest(point) { return this.tool.props.mode != this.mode && this.tool.displayControls(point) }
+
+  remove() {
+    super.remove()
+    this.tool.app.buttonsManager.unregister(this)
+  }
+}
+
 export class ReplicatorTool {
   constructor(app, props) {
     this._emitter = new Emitter()
@@ -157,6 +186,8 @@ export class ReplicatorTool {
     this.radiusHandle = new RadiusHandle(this)
 
     this.removeButton = new RemoveButton(this)
+    this.cloneButton = new ModeButton(this, 'clone', '//', 10)
+    this.mirrorButton = new ModeButton(this, 'mirror', '/\\', 20)
   }
 
   setCenter(point) {
@@ -174,20 +205,37 @@ export class ReplicatorTool {
     this._emitter.emit('changed')
   }
 
+  setMode(mode) {
+    this.props.mode = mode
+    this._emitter.emit('changed')
+  }
+
   setSlices(count) {
     this.props.slices = count
     this._buildLines()
     this._emitter.emit('changed')
   }
 
+  _pointForSlice(point, sliceIndex, layoutInfo) {
+    const {sliceAngle, center, startPoint} = layoutInfo
+    const clonedPoint = point.rotate(sliceIndex * sliceAngle, center)
+    if (this.props.mode == 'mirror' && sliceIndex % 2 == 1) {
+      const sliceStart = startPoint.rotate(sliceIndex * sliceAngle, center)
+      const mirror = sliceStart.subtract(center).getDirectedAngle(clonedPoint.subtract(center))
+      return clonedPoint.rotate(- sliceAngle - 2 * mirror, center)
+    } else {
+      return clonedPoint
+    }
+  }
+
   previewAt(point) {
     if (this.shape.contains(point)) {
-      const {center, sliceAngle} = this.layoutInfo()
+      const layoutInfo = this.layoutInfo()
       if (this.previews == null) {
         this.previews = range(0, this.props.slices - 1)
-          .map(s => this.app.buildTracePreview(point.rotate(s * sliceAngle, center)))
+          .map(s => this.app.buildTracePreview(this._pointForSlice(point, s, layoutInfo)))
       } else {
-        this.previews.forEach((p, s) => p.position = point.rotate(s * sliceAngle, center))
+        this.previews.forEach((p, s) => p.position = this._pointForSlice(point, s, layoutInfo))
       }
     } else {
       if (this.previews != null) {
@@ -199,13 +247,13 @@ export class ReplicatorTool {
 
   drawingAt(point) {
     if (this.shape.contains(point)) {
-      const {center, sliceAngle} = this.layoutInfo()
+      const layoutInfo = this.layoutInfo()
       if (this.traces == null) {
         // this.originalSliceIndex = this.getSliceIndex(point)
         this.traces = range(0, this.props.slices - 1)
           .map(s => new TraceBuilder(this.app))
       }
-      this.traces.forEach((t, s) => t.append(point.rotate(s * sliceAngle, center)))
+      this.traces.forEach((t, s) => t.append(this._pointForSlice(point, s, layoutInfo)))
     } else {
       this.traces = null
     }
@@ -248,6 +296,8 @@ export class ReplicatorTool {
     this.slicesCountHandle.remove()
     this.radiusHandle.remove()
     this.removeButton.remove()
+    this.cloneButton.remove()
+    this.mirrorButton.remove()
   }
 
   _buildLines() {

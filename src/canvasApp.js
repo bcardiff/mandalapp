@@ -92,7 +92,8 @@ export class CanvasApp {
     props = {
       center: center,
       radius: radius,
-      slices: props.slices || getRandomInt(3, 8) * 2,
+      slices: props.slices || (getRandomInt(3, 8) * 2),
+      mode: props.mode || (getRandomInt(0, 2) == 0 ? 'clone' : 'mirror'),
     }
     this.replicators.add(new ReplicatorTool(this, props))
     this.activatePointer()

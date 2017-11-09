@@ -37,7 +37,9 @@ class Root extends React.Component {
     })
 
     const radius = Math.min(window.innerWidth / 2, window.innerHeight / 2) * 0.85;
-    this.app.newReplicator({center: {x: 0, y: 0}, radius: radius, slices: 10})
+    this.app.newReplicator({center: {x: 0, y: 0}, radius: radius, slices: 10, mode: 'clone'})
+    // this.app.newReplicator({center: {x: -300, y: 0}, radius: radius, slices: 8, mode: 'mirror'})
+    // this.app.newReplicator({center: {x: 300, y: 0}, radius: radius, slices: 10, mode: 'mirror'})
     this.colorClicked(0)
   }
 
